@@ -23,6 +23,13 @@ class Task_Manager():
 
             else:
                 print("Subtasks: 0")
+
+    def display_task(self, idx):
+        print(f"\nTask {idx+1}: {self.task_list[idx]}")
+        print(f"Due: {self.time_list[idx]}")
+        print(f"Notes: {self.notes_list[idx]}")
+        print(f"Tag: {self.tag_list[idx]}")
+        print(f"# Subtasks: {len(self.sub_tasks[idx])}")
         
     def add_task(self):
 
@@ -185,51 +192,29 @@ class Task_Manager():
 
                 if self.search_query.upper() in self.task_list[idx].upper():
                     print(f"\nResults found in title of task {idx+1}:")
-                    print(f"\nTask: {self.task_list[idx]}")
-                    print(f"Due: {self.time_list[idx]}")
-                    print(f"Notes: {self.notes_list[idx]}")
-                    print(f"Tag: {self.tag_list[idx]}")
-                    print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+                    self.display_task(idx)
                     results_found = True
                  
                 if self.search_query.upper() in self.time_list[idx].upper():
                     print(f"\nResults found in due of task {idx+1}:")
-                    print(f"\nTask: {self.task_list[idx]}")
-                    print(f"Due: {self.time_list[idx]}")
-                    print(f"Notes: {self.notes_list[idx]}")
-                    print(f"Tag: {self.tag_list[idx]}")
-                    print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+                    self.display_task(idx)
                     results_found = True
                     
                 if self.search_query.upper() in self.notes_list[idx].upper():
                     print(f"\nResults found in notes of task {idx+1}:")
-                    print(f"\nTask: {self.task_list[idx]}")
-                    print(f"Due: {self.time_list[idx]}")
-                    print(f"Notes: {self.notes_list[idx]}")
-                    print(f"Tag: {self.tag_list[idx]}")
-                    print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+                    self.display_task(idx)
                     results_found = True
 
                 if self.search_query.upper() in self.tag_list[idx].upper():
                     print(f"\nResults found in notes of task {idx+1}:")
-                    print(f"\nTask: {self.task_list[idx]}")
-                    print(f"Due: {self.time_list[idx]}")
-                    print(f"Notes: {self.notes_list[idx]}")
-                    print(f"Tag: {self.tag_list[idx]}")
-                    print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+                    self.display_task(idx)
                     results_found = True
 
                 if self.search_query.upper() in (item.upper() for item in self.sub_tasks[idx]):
                     print(f"\nResults found in subtasks of task {idx+1}:")
-                    print(f"\nTask: {self.task_list[idx]}")
-                    print(f"Due: {self.time_list[idx]}")
-                    print(f"Notes: {self.notes_list[idx]}")
-                    print(f"Tag: {self.tag_list[idx]}")
-                    print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+                    self.display_task(idx)
                     results_found = True
                     
-                    
-
             else:
                 if results_found == False:
                     print("\nNo results found.")
@@ -320,11 +305,7 @@ class Task_Manager():
                     print("\n== Tasks with no tags ==")
                     for (idx, item) in enumerate(self.task_list):
                         if self.tag_list[idx] == "NO TAG":
-                            print(f"\nTask {idx+1}: {item}")
-                            print(f"Due: {self.time_list[idx]}")
-                            print(f"Notes: {self.notes_list[idx]}")
-                            print(f"Tag: {self.tag_list[idx]}")
-                            print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+                            self.display_task(idx)
 
                     else:
                         return
