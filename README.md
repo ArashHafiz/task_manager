@@ -1,15 +1,14 @@
-# TASK MANAGER 
-## FEATURES
-- Task creation
-- Task deletion
-- Task editing
-- Setting time for tasks
-- Creating sub-tasks
-- Adding notes to tasks
-- Adding tags to tasks, allowing them to be grouped later
-- Searching for specific tasks
+# Task Manager (To-Do List)
+## Features
+- Task creation, editing and deletion
+- Time setting for tasks
+- Sub-task creation
+- Addition of notes to tasks
+- Addition of tags to tasks
+- Search feature
+- Reminders
 
-## INSTALLATION & SETUP
+## Installation & Setup
 1. Clone the repository:
 ```
 git clone https://github.com/YOUR-USERNAME/task-manager.git
@@ -21,14 +20,14 @@ python task_manager.py
 ```
 Note: No external library installations required. Ensure you have Python 3.7+ installed.
 
-## BUILT WITH
+## Built With
 1. Python 3.11
 2. Time module
 
-## FUTURE PLANS
+## Future Plans
 1. Add feature to allow storage of tasks even after program stops
 2. Implement priority levels for tasks
 3. Potentially use ```tkinter``` to convert program to GUI
 
-## LICENSE
+## License
 Software is open-source under the MIT license. Feel free to do as you please with it.
