@@ -30,6 +30,23 @@ class Task_Manager():
         print(f"Notes: {self.notes_list[idx]}")
         print(f"Tag: {self.tag_list[idx]}")
         print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+
+    def check_task_time(self):
+        for (idx, item) in enumerate(self.time_list):
+            if item != "EMPTY":
+                deadline_timestamp = time.mktime(time.strptime(item, "%H:%M %d %B %Y"))
+                if (deadline_timestamp - time.time()) <= 0:
+                    print("\nWarning: task overdue!")
+                    print(f"{self.task_list[idx]} was due at {item}")
+                elif (deadline_timestamp - time.time()) <= 3600:
+                    print("\nWarning: task due within an hour!")
+                    print(f"{self.task_list[idx]} is due at {item}")
+                elif (deadline_timestamp - time.time()) <= 43200:
+                    print("\nWarning: task due within 12 hours!") 
+                    print(f"{self.task_list[idx]} is due at {item}")
+                elif (deadline_timestamp - time.time()) <= 86400:
+                    print("\nWarning: task due within a day!")
+                    print(f"{self.task_list[idx]} is due at {item}")
         
     def add_task(self):
 
@@ -337,6 +354,10 @@ class Task_Manager():
 
             try:
 
+                if len(self.task_list) == 0:
+                    print("\nSeems like your list is empty! You can't add sub-tasks if there are no tasks.")
+                    return
+
                 self.display_list()
 
                 self.sub_task_idx = input("\nPlease enter index of task you would like to add sub-tasks to (X to exit): ")
@@ -405,6 +426,9 @@ while choice != "X":
     print("H: Display tasks based on tags")
     print("I: Add sub-tasks")
     print(f"\nCurrent time: {time.strftime('%H:%M %d %B %Y')}")
+
+    if task.task_list:
+        task.check_task_time()
 
     choice = input("\nPlease enter choice: ").upper()
 
