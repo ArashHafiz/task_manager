@@ -1,6 +1,7 @@
 # Task Manager (To-Do List)
 ## Features
 - Task creation, editing and deletion
+- File saving and retrieval system
 - Time setting for tasks
 - Sub-task creation
 - Addition of notes to tasks
