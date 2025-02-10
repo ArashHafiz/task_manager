@@ -4,230 +4,183 @@ current_time = time.localtime(time.time())
 class Task_Manager():
 
     def __init__(self):
-
         self.task_list = []
-        self.time_list = []
-        self.notes_list = []
-        self.tag_list = []
-        self.tag_name_list = []
-        self.sub_tasks = dict()
+        self.completed_task_list = []
 
     def display_list(self):
-        for (idx,item) in enumerate(self.task_list):
-            print(f"\nTask {idx+1}: {item}")
-            print(f"Due: {self.time_list[idx]}")
-            print(f"Notes: {self.notes_list[idx]}")
-            print(f"Tag: {self.tag_list[idx]}")
-            if idx in self.sub_tasks:
-                print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+        for idx, task in enumerate(self.task_list):
+            print(f"\nTask {idx+1}: {task['task']}")
+            print(f"Due: {task['time']}")
+            print(f"Notes: {task['notes']}")
+            print(f"Tag: {task['tag']}")
+            print(f"Subtasks: {len(task['subtasks'])}")
 
-            else:
-                print("Subtasks: 0")
+    def display_completed_list(self):
+        for idx, task in enumerate(self.completed_task_list):
+            print(f"\nCompleted task {idx+1}: {task['task']}")
 
     def display_task(self, idx):
-        print(f"\nTask {idx+1}: {self.task_list[idx]}")
-        print(f"Due: {self.time_list[idx]}")
-        print(f"Notes: {self.notes_list[idx]}")
-        print(f"Tag: {self.tag_list[idx]}")
-        print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+        task = self.task_list[idx]
+        print(f"\nTask {idx+1}: {task['task']}")
+        print(f"Due: {task['time']}")
+        print(f"Notes: {task['notes']}")
+        print(f"Tag: {task['tag']}")
+        print(f"Subtasks: {len(task['subtasks'])}")
 
     def check_task_time(self):
-        for (idx, item) in enumerate(self.time_list):
-            if item != "EMPTY":
-                deadline_timestamp = time.mktime(time.strptime(item, "%H:%M %d %B %Y"))
-                if (deadline_timestamp - time.time()) <= 0:
-                    print("\nWarning: task overdue!")
-                    print(f"{self.task_list[idx]} was due at {item}")
-                elif (deadline_timestamp - time.time()) <= 3600:
-                    print("\nWarning: task due within an hour!")
-                    print(f"{self.task_list[idx]} is due at {item}")
-                elif (deadline_timestamp - time.time()) <= 43200:
-                    print("\nWarning: task due within 12 hours!") 
-                    print(f"{self.task_list[idx]} is due at {item}")
-                elif (deadline_timestamp - time.time()) <= 86400:
-                    print("\nWarning: task due within a day!")
-                    print(f"{self.task_list[idx]} is due at {item}")
-        
+        for task in self.task_list:
+            if task['time'] != "EMPTY":
+                deadline_timestamp = time.mktime(time.strptime(task['time'], "%H:%M %d %B %Y"))
+                time_left = deadline_timestamp - time.time()
+                
+                if time_left <= 0:
+                    print(f"\nWarning: task overdue! {task['task']} was due at {task['time']}")
+                elif time_left <= 3600:
+                    print(f"\nWarning: task due within an hour! {task['task']} is due at {task['time']}")
+                elif time_left <= 43200:
+                    print(f"\nWarning: task due within 12 hours! {task['task']} is due at {task['time']}")
+                elif time_left <= 86400:
+                    print(f"\nWarning: task due within a day! {task['task']} is due at {task['time']}")
+    
     def add_task(self):
-
         print("\n== ADD TASK ==")
-        print("This section allows you to add tasks and their times.")
-        self.new_task = ""
-        
         while True:
-
             self.display_list()
-                
-            self.new_task = input("\nPlease enter new task (X to exit): ")
-            
-            if self.new_task.upper() == "X":
+            new_task = input("\nPlease enter new task (X to exit): ")
+            if new_task.upper() == "X":
+                print("\nReturning to menu...")
                 break
-            self.task_list.append(self.new_task)
-            self.time_list.append("EMPTY")
-            self.notes_list.append("EMPTY")
-            self.tag_list.append("NO TAG")
-
-            self.sub_tasks[len(self.task_list) - 1] = []
-
+            
+            task_entry = {
+                "task": new_task,
+                "time": "EMPTY",
+                "notes": "EMPTY",
+                "tag": "NO TAG",
+                "subtasks": []
+            }
+            self.task_list.append(task_entry)
+    
     def remove_task(self):
-
         print("\n== REMOVING TASKS ==")
-        print("This section allows you to remove tasks.")
-        
         while True:
+            if not self.task_list:
+                print("\nIt appears that your task list is empty!")
+                return
+            
+            for idx, task in enumerate(self.task_list):
+                print(f"Task {idx+1}: {task['task']}")
+            
+            remove_task = input("\nPlease put down number of task to be removed (X to exit): ")
+            if remove_task.upper() == "X":
+                print("\nReturning to menu...")
+                break
             
             try:
-                if len(self.task_list) == 0:
-                    print("\nIt appears that your task list is empty!")
-                    return
-  
-                for (idx,item) in enumerate(self.task_list):
-                    print(f"Task {idx+1}: {item}")
-                
-                self.remove_task = input("\nPlease put down number of task to be removed (x to exit): ")
-                
-                if self.remove_task.upper() == "X":
-                    print("\nReturning to menu...")
-                    break
-                    
-                self.remove_task = int(self.remove_task)
-                self.task_list.pop(self.remove_task-1)
+                remove_task = int(remove_task)
+                self.task_list.pop(remove_task-1)
                 print("\nTask removed.")
-                
-            except ValueError:
-                print("\nInvalid, please put a number for the task number.")
-
-            except IndexError:
-                print("\nOops, looks like that index isn't in the list range. Try again.")
-
+            except (ValueError, IndexError):
+                print("\nInvalid input, please try again.")
+    
     def add_time(self):
-
         print("\n== ADDING TIME TO TASKS ==")
-        print("This section allows you to attach times to tasks.")
-
-        self.task_time = ""
-
         while True:
-
+            if not self.task_list:
+                print("\nIt appears your task list is empty!")
+                return
+            
+            self.display_list()
+            task_time = input("\nPlease enter amount of minutes to task deadline (X to exit): ")
+            if task_time.upper() == "X":
+                print("\nReturning to menu...")
+                break
+            
+            task_index = input("\nPlease enter index of task to attach timing to (X to exit): ")
+            if task_index.upper() == "X":
+                print("\nReturning to menu...")
+                break
+            
             try:
-                if len(self.task_list) == 0:
-                    print("\nIt appears your task list is empty!")
-                    return
-
-                self.display_list()
-
-                self.task_time = input("\nPlease enter amount of minutes to task deadline (X to exit): ")
+                task_index = int(task_index) - 1
+                task_time = float(task_time)
+                task_time_minutes = time.localtime(time.time() + 60 * task_time)
                 
-                
-                if self.task_time.upper() == "X":
-                    print("\nReturning to menu...")
-                    break
-
-                self.task_time_task = input("\nPlease enter index of task to attach timing to (X to exit): ")
-                    
-                if self.task_time_task.upper() == "X":
-                    print("\nReturning to menu...")
-                    break
-
-                self.task_time_task = int(self.task_time_task)
-
-                self.task_time = float(self.task_time)
-                
-                self.task_time_minutes = time.localtime(time.time()+ 60 * self.task_time)
-
-                if self.task_time_minutes <= current_time:
+                if task_time_minutes <= current_time:
                     print("\nI think you might be slightly overdue for this one.\n")
-
-                elif self.task_time_minutes >= time.localtime(time.time() + 60 * 525960):
+                elif task_time_minutes >= time.localtime(time.time() + 60 * 525960):
                     print("\nI don't think you'll have to worry about this one for a while.\n")
-                          
-                print(f"\nTask {self.task_time_task} due: {time.strftime('%H:%M %d %B %Y',self.task_time_minutes)}")
-                self.time_list[self.task_time_task-1] = time.strftime('%H:%M %d %B %Y',self.task_time_minutes)
                 
-            except ValueError:
-                print("\nInvalid value, please enter a number")
-
-            except IndexError:
-                print("\nIt appears that the index you've provided is out of the task lists' range. Please try again.\n")
-
+                formatted_time = time.strftime('%H:%M %d %B %Y', task_time_minutes)
+                print(f"\nTask {task_index + 1} due: {formatted_time}")
+                self.task_list[task_index]['time'] = formatted_time
+                
+            except (ValueError, IndexError):
+                print("\nInvalid input, please try again.")
 
     def add_notes(self):
-        print("\n== ADD NOTES ==")
-        print("This section allows you to add notes to your tasks.")
+        print("\n== ADDING NOTES TO TASKS ==")
 
-        if len(self.task_list) == 0:
-            print("\nSorry, it appears you have no tasks to add notes to!")
-            return
-
+        if not self.task_list:
+                print("\nSorry, it appears you have no tasks to add notes to!")
+                return
+        
         while True:
-
             try:
-
                 self.display_list()
-
-                self.task_note = input("\nPlease write note (X to exit): ")
-
+                self.task_note = input("\nPlease write your note (X to exit): ")
                 if self.task_note.upper() == "X":
                     print("\nReturning to menu...")
                     break
 
-                self.task_note_idx = input("\nPlease enter index of task (X to exit): ")
-
+                self.task_note_idx = input("\nPlease enter index of task to add note to (X to exit): ")
                 if self.task_note_idx.upper() == "X":
                     print("\nReturning to menu...")
                     break
 
-                self.task_note_idx = int(self.task_note_idx)
-
-                self.notes_list[self.task_note_idx-1] = self.task_note
+                self.task_note_idx = int(self.task_note_idx) - 1
+                self.task_list[self.task_note_idx]['notes'] = self.task_note
 
             except ValueError:
                 print("\nInvalid value for task index, please enter a number.")
-
             except IndexError:
                 print("\nIt appears that the index you've provided is out of the task lists' range. Please try again.\n")
 
     def search_task(self):
         print("\n== SEARCH FOR TASK ==")
-        print("This section allows you to search for tasks using a search query.")
 
-        if len(self.task_list) == 0:
+        if not self.task_list:
             print("\nIt appears you have no impending tasks!")
             return
-
         results_found = False
 
         while True:
-
             self.search_query = input("\nPlease enter your search query here (X to exit): ")
-
             if self.search_query.upper() == "X":
                 print("\nReturning to menu...")
                 break
 
-            for idx in range(len(self.task_list)):
-
-                if self.search_query.upper() in self.task_list[idx].upper():
+            for idx, task in enumerate(self.task_list):
+                if self.search_query.upper() in task['task'].upper():
                     print(f"\nResults found in title of task {idx+1}:")
                     self.display_task(idx)
                     results_found = True
                  
-                if self.search_query.upper() in self.time_list[idx].upper():
+                if self.search_query.upper() in task['time'].upper():
                     print(f"\nResults found in due of task {idx+1}:")
                     self.display_task(idx)
                     results_found = True
                     
-                if self.search_query.upper() in self.notes_list[idx].upper():
+                if self.search_query.upper() in task['notes'].upper():
                     print(f"\nResults found in notes of task {idx+1}:")
                     self.display_task(idx)
                     results_found = True
 
-                if self.search_query.upper() in self.tag_list[idx].upper():
-                    print(f"\nResults found in notes of task {idx+1}:")
+                if self.search_query.upper() in task['tag'].upper():
+                    print(f"\nResults found in tag of task {idx+1}:")
                     self.display_task(idx)
                     results_found = True
 
-                if self.search_query.upper() in (item.upper() for item in self.sub_tasks[idx]):
+                if self.search_query.upper() in task['subtasks'].upper():
                     print(f"\nResults found in subtasks of task {idx+1}:")
                     self.display_task(idx)
                     results_found = True
@@ -238,165 +191,113 @@ class Task_Manager():
 
     def add_tag(self):
         print("\n== ADD TAG TO TASK ==")
-        print("This section allows you to add tags to tasks for better organization.")
 
-        if len(self.task_list) == 0:
+        if not self.task_list:
             print("\nIt appears you have no impending tasks!")
             return
 
         while True:
-
             try:
-
                 self.display_list()
-
                 self.task_tag = input("\nPlease enter tag name (X to exit): ")
 
                 if self.task_tag.upper() == "X":
                     print("\nReturning to menu...")
                     break
 
-                for item in self.tag_name_list:
-                    if item == self.task_tag:
+                for task in self.task_list:
+                    if task['tag'] == self.task_tag:
                         print("\nIt appears you already have a task with this name.")
                         return
 
-                self.tag_name_list.append(self.task_tag)
-
                 self.tag_idx = input("\nEnter index of task you would like to add tag to (X to exit): ")
-
                 if self.tag_idx.upper() == "X":
                     print("\nReturning to menu...")
                     break
 
-                self.tag_idx = int(self.tag_idx)
-
-                self.tag_list[self.tag_idx-1] = self.task_tag
-
+                self.tag_idx = int(self.tag_idx) - 1
+                self.task_list[self.tag_idx]['tag'] = self.task_tag
                 self.display_list()
 
                 while True:
-
                     self.tag_idx = input(f"\nEnter index of other tasks you would like to assign {self.task_tag} to (X to exit): ")
-
                     if self.tag_idx.upper() == "X":
                         print("\nReturning to menu...")
-                        return
+                        break
 
                     self.tag_idx = int(self.tag_idx)
-                    
-                    self.tag_list[self.tag_idx-1] = self.task_tag
-
+                    self.task_list[self.tag_idx]['tag'] = self.task_tag
                     self.display_list()
                     
             except ValueError:
                 print("\nInvalid value, please enter a number.")
-
-            except IndexError:
-                print("\nYour entered index is out of bounds. Please try again.")
-
-    def display_tags(self):
-        print("\n== DISPLAY TASKS BASED ON TAGS ==")
-        print("This section allows you to display the tasks that go under a chosen tag.")
-
-        while True:
-
-            try:
-
-                if len(self.task_list) == 0:
-                    print("\nSeems like your list is empty!")
-                    return
-
-                print("\n-- LIST OF TAGS --\n")
-
-                for (idx,item) in enumerate(self.tag_name_list):
-                    print(f"{idx+1} : {item}")
-
-                self.tag_display = input("\nPlease enter index of tag you wish to access (X to exit, and 'No tag' to display tasks with no tag): ")
-
-                if self.tag_display.upper() == "X":
-                    print("\nReturning to menu...")
-                    return
-
-                if self.tag_display.upper() == "NO TAG":
-                    print("\n== Tasks with no tags ==")
-                    for (idx, item) in enumerate(self.task_list):
-                        if self.tag_list[idx] == "NO TAG":
-                            self.display_task(idx)
-
-                    else:
-                        return
-                        
-                
-                self.tag_display = int(self.tag_display)
-
-                print(f"\n== {self.tag_name_list[self.tag_display-1]} ==")
-
-                for (idx, item) in enumerate(self.task_list):
-                    if self.tag_list[idx] == self.tag_name_list[self.tag_display-1]:
-                        print(f"\nTask {idx+1}: {item}")
-                        print(f"Due: {self.time_list[idx]}")
-                        print(f"Notes: {self.notes_list[idx]}")
-                        print(f"Tag: {self.tag_list[idx]}")
-                        print(f"# Subtasks: {len(self.sub_tasks[idx])}")
-
-            except ValueError:
-                print("\nInvalid value for tag index!")
-
             except IndexError:
                 print("\nYour entered index is out of bounds. Please try again.")
 
     def add_sub_tasks(self):
         print("\n== ADD SUB-TASKS ==")
-        print("This section allows you to add sub-tasks to tasks.")
 
+        if not self.task_list:
+            print("\nSeems like your list is empty! You can't add sub-tasks if there are no tasks.")
+            return
+        
         while True:
-
             try:
-
-                if len(self.task_list) == 0:
-                    print("\nSeems like your list is empty! You can't add sub-tasks if there are no tasks.")
-                    return
-
                 self.display_list()
-
                 self.sub_task_idx = input("\nPlease enter index of task you would like to add sub-tasks to (X to exit): ")
-
                 if self.sub_task_idx.upper() == "X":
                     print("\nReturning to menu...")
-                    return
+                    break
 
-                self.sub_task_idx = int(self.sub_task_idx)
-
-                for (idx, item) in enumerate(self.task_list):
-                    
-                    if self.task_list[self.sub_task_idx-1] == item:
-
-                        print(f"\nTask {idx+1}: {item}")
-                        print(f"Due: {self.time_list[idx]}")
-                        print(f"Notes: {self.notes_list[idx]}")
-                        print(f"Tag: {self.tag_list[idx]}")
-                        print(f"# Subtasks: {len(self.sub_tasks[idx])}")
+                self.sub_task_idx = int(self.sub_task_idx) - 1
+                self.display_task(self.sub_task_idx)
 
                 while True:
-
                     self.sub_task = input("\nPlease enter sub task (X to exit): ")
-
                     if self.sub_task.upper() == "X":
                         print("\nReturning to menu...")
-                        return
+                        break
 
-                    self.sub_tasks[self.sub_task_idx-1].append(self.sub_task)
+                    self.task_list[self.sub_task_idx]['subtasks'].append(self.sub_task)
 
-                    for key in self.sub_tasks:
-                        print(f"\nTask {key+1}: {', '.join(self.sub_tasks[key])}")
-                    
             except ValueError:
                 print("Invalid value for indexing!")
-
             except IndexError:
                 print("Index value out of bounds. Please try again.")
-                         
+
+    def mark_as_complete(self):
+        print("\n== MARK TASK AS COMPLETE ==")
+        print("Mark tasks as complete and view completed tasks.")
+
+        if not self.task_list:
+            print("Congrats! Looks like there's nothing to do.")
+            return
+        
+        while True:
+            try:
+                if self.completed_task_list:
+                    print("\n-- COMPLETED TASKS --")
+                    self.display_completed_list()
+                
+                print("\n-- CURRENT TASKS --")
+                self.display_list()
+
+                self.check_task_idx = input("\nPlease enter index of task you would like to mark as complete (X to exit): ")
+                if self.check_task_idx.upper() == "X":
+                    print("\nReturning to menu...")
+                    break
+
+                self.check_task_idx = int(self.check_task_idx)
+
+                task_to_complete = self.task_list[self.check_task_idx - 1]
+                self.completed_task_list.append(task_to_complete)
+                del self.task_list[self.check_task_idx - 1]
+
+            except ValueError:
+                print("Invalid value for indexing!")
+            
+            except IndexError:
+                print("Index value out of bounds. Please try again.")
 
 task = Task_Manager()
 choice = ""
@@ -409,8 +310,8 @@ operations = {
     "E": task.add_notes,
     "F": task.search_task,
     "G": task.add_tag,
-    "H": task.display_tags,
-    "I": task.add_sub_tasks,
+    "H": task.add_sub_tasks,
+    "I" : task.mark_as_complete,
     }
 
 while choice != "X":
@@ -423,8 +324,8 @@ while choice != "X":
     print("E: Add notes to task")
     print("F: Search for task")
     print("G: Add tag to task")
-    print("H: Display tasks based on tags")
-    print("I: Add sub-tasks")
+    print("H: Add sub-tasks")
+    print("I: Mark task as complete")
     print(f"\nCurrent time: {time.strftime('%H:%M %d %B %Y')}")
 
     if task.task_list:
