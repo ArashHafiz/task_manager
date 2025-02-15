@@ -26,9 +26,9 @@ Note: No external library installations required. Ensure you have Python 3.7+ in
 2. Time module
 
 ## Future Plans
-1. Add feature to allow storage of tasks even after program stops
-2. Implement priority levels for tasks
-3. Potentially use ```tkinter``` to convert program to GUI
+1. Add feature to allow storage of tasks even after program stops - DONE
+2. Implement priority levels for tasks - NOT YET
+3. Potentially use ```tkinter``` to convert program to GUI - IN PROGRESS
 
 ## License
 Software is open-source under the MIT license. Feel free to do as you please with it.
