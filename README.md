@@ -1,4 +1,4 @@
-# Task Manager (To-Do List)
+# Task Manager (To-Do List) - WIP
 ## Features
 - Task creation, editing and deletion
 - File saving and retrieval system
@@ -25,10 +25,10 @@ Note: No external library installations required. Ensure you have Python 3.7+ in
 1. Python 3.11
 2. Time module
 
-## Future Plans
+## Current Schedule and Plans
 1. Add feature to allow storage of tasks even after program stops - DONE
-2. Implement priority levels for tasks - NOT YET
-3. Potentially use ```tkinter``` to convert program to GUI - IN PROGRESS
+2. Use ```tkinter``` to convert program to GUI - DONE
+3. Complete development of user interface - IN PROGRESS
 
 ## License
 Software is open-source under the MIT license. Feel free to do as you please with it.
