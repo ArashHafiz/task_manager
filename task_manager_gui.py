@@ -29,7 +29,17 @@ class Task_GUI():
 
         # Listbox
         self.task_listbox = tk.Listbox(self.root, width=20, height=15)  
-        self.task_listbox.grid(row=2, column=0, rowspan=4, padx=10, pady=5, sticky="nsew")
+        self.task_listbox.grid(row=2, column=0, rowspan=1, padx=10, pady=5, sticky="nsew")
+
+        # Task information panel title
+        self.info_title = tk.Label(self.root, text="Task Information", font=("Arial", 14))
+        self.info_title.grid(row=3, column=0, sticky="w", padx=10, pady=5)
+
+        # Task information panel
+        self.task_info_panel = tk.Listbox(self.root, width=20, height=10)
+        self.task_info_panel.grid(row=4, column=0, rowspan=2, padx=10, pady=5, sticky="nsew")
+        self.task_listbox.bind("<<ListboxSelect>>", lambda event: self.update_info_panel())
+
 
         # -- BUTTONS --
         # Button frame
@@ -123,17 +133,21 @@ class Task_GUI():
         # Window labels
         self.edit_task_label = tk.Label(self.edit_task_window, text="Edit Task", font=("Arial", 14))
         self.edit_task_label.grid(row=0, column=0, columnspan=2, sticky="n", padx=10, pady=5)
+
         self.deadline_disclaimer_label = tk.Label(self.edit_task_window, text="*For deadline, please enter in minutes from now.", font=("Arial", 11), fg="gray")
-        self.deadline_disclaimer_label.grid(row=4, column=0, padx=5, pady=(0, 10), sticky="sw")
+        self.deadline_disclaimer_label.grid(row=5, column=0, padx=5, pady=(0, 10), sticky="sw")
+
+        self.task_name_label = tk.Label(self.edit_task_window, text=f"'{self.task_manager.task_list[self.selected_task_idx]['task']}'", font=("Arial", 14))
+        self.task_name_label.grid(row=1, column=0, columnspan=2, sticky="n", padx=10, pady=5)
 
         # Entry box
         self.edit_task_entry = tk.Entry(self.edit_task_window, width=43, font=("Arial", 14))
-        self.edit_task_entry.grid(row=1, column=0, padx=10, pady=5, sticky="n")
+        self.edit_task_entry.grid(row=2, column=0, padx=10, pady=5, sticky="n")
 
         # -- BUTTONS --
         # Button frame
         self.edit_task_button_frame = tk.Frame(self.edit_task_window)
-        self.edit_task_button_frame.grid(row=2, column=0, rowspan=2, padx=5, pady=5, sticky="n")
+        self.edit_task_button_frame.grid(row=3, column=0, rowspan=2, padx=5, pady=5, sticky="n")
 
         # Rename task button
         self.rename_task_button = tk.Button(self.edit_task_button_frame, text="Rename Task", width=self.button_width, command=self.rename_task)
@@ -155,6 +169,21 @@ class Task_GUI():
 
     def open_completed_task_window(self):
         return True
+
+    def update_info_panel(self):
+        """Updates information panel in root window"""
+        selected_task = self.task_listbox.curselection()
+        self.task_info_panel.delete(0, tk.END)
+        if selected_task:
+            selected_task_idx = selected_task[0]
+            task = self.task_manager.task_list[selected_task_idx]
+            # Display task information
+            self.task_info_panel.insert(tk.END, f"Task: {task['task']}" if task['task'] != "EMPTY" else "Task: -")
+            self.task_info_panel.insert(tk.END, f"Due: {task['time']}" if task['time'] != "EMPTY" else "Due: -")
+            self.task_info_panel.insert(tk.END, f"Notes: {task['notes']}" if task['notes'] != "EMPTY" else "Notes: -")
+            self.task_info_panel.insert(tk.END, f"Tag: {task['tag']}" if task['tag'] != "NO TAG" else "Tag: -")
+        else:
+            self.task_info_panel.insert(tk.END, "Select a task to see details.")
 
     def refresh_task_list(self):
         """Refreshes listbox."""
@@ -184,6 +213,10 @@ class Task_GUI():
             messagebox.showerror(title="Error!", message="Must select task to delete.")
             return
         self.selected_task_idx = self.selected_task[0]
+
+        self.remove_task_confirmation = messagebox.askquestion(title="Are you sure?" ,message=f"Are you sure you want to delete '{self.task_manager.task_list[self.selected_task_idx]['task']}'?")
+        if self.remove_task_confirmation == "no":
+            return
 
         self.task_manager.remove_task(self.selected_task_idx)
         self.refresh_task_list()
@@ -278,10 +311,11 @@ class Task_GUI():
     
     def mark_as_complete(self):
         """Marks task as complete"""
-
+        messagebox.showinfo(title="Work in progress!", message="Feature currently a WIP.")
     
     def view_completed_tasks(self):
-        return True
+        """View completed tasks"""
+        messagebox.showinfo(title="Work in progress!", message="Feature currently a WIP.")
 
 if __name__ == "__main__":
     task_gui = Task_GUI()
