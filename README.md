@@ -9,8 +9,8 @@
 ## Installation & Setup
 1. Clone the repository:
 ```
-git clone https://github.com/YOUR-USERNAME/task-manager.git
-cd task-manager
+git clone https://github.com/ArashHafiz/task_manager.git
+cd task_manager
 ```
 2. Run the program:
 ```
@@ -26,6 +26,11 @@ Note: No external library installations required. Ensure you have Python 3.7+ in
 1. Add feature to allow storage of tasks even after program stops - DONE
 2. Use ```tkinter``` to convert program to GUI - DONE
 3. Complete development of user interface - IN PROGRESS
+   - Addition, deletion of tasks - DONE
+   - Modification of tasks - DONE
+   - Displaying of task information - DONE
+   - Mark tasks as complete and view completed tasks - IN PROGRESS
+   - Reminders for due dates - IN PROGRESS
 
 ## License
 Software is open-source under the MIT license. Feel free to do as you please with it.
