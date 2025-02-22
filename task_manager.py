@@ -138,7 +138,24 @@ class Task_Manager():
                 return False
         if 0 <= task_idx < len(self.task_list):
             self.completed_task_list.append(self.task_list[task_idx])
+            self.completed_task_list[-1]['completed'] = time.strftime('%H:%M %d %B %Y', current_time)
             del self.task_list[task_idx]
+            self.save_tasks()
+            return True
+        return False
+    
+    def unmark_as_complete(self, task_idx):
+        """Unmarks task as complete"""
+        if isinstance(task_idx, str):
+            try:
+                task_idx = int(task_idx)
+            except ValueError:
+                return False
+        if 0 <= task_idx < len(self.completed_task_list):
+            if 'completed' in self.completed_task_list[task_idx]:
+                self.completed_task_list[task_idx].pop('completed')
+            self.task_list.append(self.completed_task_list[task_idx])
+            del self.completed_task_list[task_idx]
             self.save_tasks()
             return True
         return False

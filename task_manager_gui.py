@@ -1,6 +1,9 @@
+import time
 import tkinter as tk
 from tkinter import messagebox, Toplevel
 from task_manager import Task_Manager
+
+current_time = time.localtime(time.time())
 
 class Task_GUI():
     def __init__(self):
@@ -40,7 +43,6 @@ class Task_GUI():
         self.task_info_panel.grid(row=4, column=0, rowspan=2, padx=10, pady=5, sticky="nsew")
         self.task_listbox.bind("<<ListboxSelect>>", lambda event: self.update_info_panel())
 
-
         # -- BUTTONS --
         # Button frame
         self.button_frame = tk.Frame(self.root)
@@ -64,7 +66,7 @@ class Task_GUI():
         self.mark_as_complete_button.pack(pady=2)
 
         # View completed tasks button
-        self.view_completed_tasks_button = tk.Button(self.button_frame, text="View Completed", width=self.button_width, command=self.view_completed_tasks)
+        self.view_completed_tasks_button = tk.Button(self.button_frame, text="View Completed", width=self.button_width, command=self.open_completed_task_window)
         self.view_completed_tasks_button.pack(pady=2)
 
         self.root.grid_columnconfigure(0, weight=2) # Listbox horizontal expansion
@@ -132,7 +134,7 @@ class Task_GUI():
 
         # Window labels
         self.edit_task_label = tk.Label(self.edit_task_window, text="Edit Task", font=("Arial", 14))
-        self.edit_task_label.grid(row=0, column=0, columnspan=2, sticky="n", padx=10, pady=5)
+        self.edit_task_label.grid(row=0, column=0, columnspan=2, padx=10, pady=5, sticky="n")
 
         self.deadline_disclaimer_label = tk.Label(self.edit_task_window, text="*For deadline, please enter in minutes from now.", font=("Arial", 11), fg="gray")
         self.deadline_disclaimer_label.grid(row=5, column=0, padx=5, pady=(0, 10), sticky="sw")
@@ -168,7 +170,43 @@ class Task_GUI():
         self.edit_task_window.grab_set()
 
     def open_completed_task_window(self):
-        return True
+        """Opens window containing list of completed tasks"""
+        # Initialize window
+        self.completed_task_window = tk.Toplevel(self.root)
+        self.completed_task_window.title("Completed Tasks")
+        self.completed_task_window.geometry("500x400")
+        self.completed_task_window.resizable(0, 0)
+
+        # Window labels
+        self.completed_task_label = tk.Label(self.completed_task_window, text="Completed Tasks", font=("Arial", 14))
+        self.completed_task_label.grid(row=0, column=0, columnspan=3, padx=10, pady=5, sticky="n")
+
+        self.completed_list_label = tk.Label(self.completed_task_window, text="List of Completed Tasks", font=("Arial", 14))
+        self.completed_list_label.grid(row=1, column=0, columnspan=3, sticky="nw", padx=10, pady=5)
+
+        # Listboxes
+        self.completed_listbox = tk.Listbox(self.completed_task_window, width=43)
+        self.completed_listbox.grid(row=2, column=0, columnspan=3, padx=10, pady=5, sticky="nw")
+        self.refresh_completed_task_list()
+
+        self.completed_task_info_panel = tk.Listbox(self.completed_task_window, width=43)
+        self.completed_task_info_panel.grid(row=3, column=0, columnspan=3, padx=10, pady=5, sticky="nw")
+        self.completed_listbox.bind("<<ListboxSelect>>", lambda event: self.update_completed_task_info_panel())
+
+        # -- BUTTONS --
+        # Button frame
+        self.completed_task_button_frame = tk.Frame(self.completed_task_window)
+        self.completed_task_button_frame.grid(row=2, column=2, columnspan=3, rowspan=2, padx=5, pady=5, sticky="n")
+
+        # Unmark complete button
+        self.unmark_complete_button = tk.Button(self.completed_task_button_frame, text="Unmark Complete", width=self.button_width, command=self.unmark_as_complete)
+        self.unmark_complete_button.pack(pady=2)
+
+        self.completed_task_window.columnconfigure(0, weight=1)
+        self.completed_task_window.columnconfigure(1, weight=1)
+        self.completed_task_window.columnconfigure(2, weight=1)
+
+        self.completed_task_window.grab_set()
 
     def update_info_panel(self):
         """Updates information panel in root window"""
@@ -185,13 +223,35 @@ class Task_GUI():
         else:
             self.task_info_panel.insert(tk.END, "Select a task to see details.")
 
+    def update_completed_task_info_panel(self):
+        """Updates information panel in completed task window"""
+        selected_task = self.completed_listbox.curselection()
+        self.completed_task_info_panel.delete(0, tk.END)
+        if selected_task:
+            selected_task_idx = selected_task[0]
+            task = self.task_manager.completed_task_list[selected_task_idx]
+            # Display task information
+            self.completed_task_info_panel.insert(tk.END, f"Task: {task['task']}" if task['task'] != "EMPTY" else "Task: -")
+            self.completed_task_info_panel.insert(tk.END, f"Due: {task['time']}" if task['time'] != "EMPTY" else "Due: -")
+            self.completed_task_info_panel.insert(tk.END, f"Notes: {task['notes']}" if task['notes'] != "EMPTY" else "Notes: -")
+            self.completed_task_info_panel.insert(tk.END, f"Tag: {task['tag']}" if task['tag'] != "NO TAG" else "Tag: -")
+            if 'completed' in task:
+                self.completed_task_info_panel.insert(tk.END, f"Completed: {task['completed']}")
+            else:
+                self.completed_task_info_panel.insert(tk.END, "Completed: Unknown")
+        else:
+            self.completed_task_info_panel.insert(tk.END, "Select a task to see details.")
+
     def refresh_task_list(self):
         """Refreshes listbox."""
         self.task_listbox.delete(0, tk.END)
         for idx, task in enumerate(self.task_manager.task_list):
             self.task_listbox.insert(tk.END, f"{idx+1}. {task['task']}")
 
-    # ADD TASK WINDOW COMMANDS
+    def refresh_completed_task_list(self):
+        self.completed_listbox.delete(0, tk.END)
+        for idx, task in enumerate(self.task_manager.completed_task_list):
+            self.completed_listbox.insert(tk.END, f"{task['task']}")
 
     def add_task(self):
         """Adds new task"""
@@ -296,7 +356,7 @@ class Task_GUI():
 
         self.task_manager.add_tag(task_idx, new_tag)
         self.refresh_task_list
-        messagebox.showinfo(title="Tag Added", message = f"Successfully added tag '{self.task_manager.task_list[task_idx]['tag']}' to '{self.task_manager.task_list[-1]['task']}'")
+        messagebox.showinfo(title="Tag Added", message = f"Successfully added tag '{self.task_manager.task_list[task_idx]['tag']}' to '{self.task_manager.task_list[-1]['task']}'.")
     
     def rename_task(self):
         """Renames task"""
@@ -307,15 +367,30 @@ class Task_GUI():
         
         self.task_manager.rename_task(self.selected_task_idx, new_task_name)
         self.refresh_task_list()
-        messagebox.showinfo(title="Task Renamed", message=f"Successfully renamed task to '{new_task_name}'")
+        messagebox.showinfo(title="Task Renamed", message=f"Successfully renamed task to '{new_task_name}'.")
     
     def mark_as_complete(self):
         """Marks task as complete"""
-        messagebox.showinfo(title="Work in progress!", message="Feature currently a WIP.")
-    
-    def view_completed_tasks(self):
-        """View completed tasks"""
-        messagebox.showinfo(title="Work in progress!", message="Feature currently a WIP.")
+        selected_task = self.task_listbox.curselection()
+        if selected_task:
+            selected_task_idx = selected_task[0]
+            task = self.task_manager.task_list[selected_task_idx]['task']
+            self.task_manager.mark_as_complete(selected_task_idx)
+            self.refresh_task_list()
+            messagebox.showinfo(title="Marked as Complete", message=f"Successfully marked '{task}' as complete.")
+
+    def unmark_as_complete(self):
+        """Unmarks task as complete"""
+        selected_task = self.completed_listbox.curselection()
+        if selected_task:
+            selected_task_idx = selected_task[0]
+            task = self.task_manager.completed_task_list[selected_task_idx]['task']
+            self.task_manager.unmark_as_complete(selected_task_idx)
+            self.refresh_completed_task_list()
+            self.refresh_task_list()
+            messagebox.showinfo(title="Unmarked as Complete", message=f"Successfully unmarked '{task}' as complete.")
+        else:
+            messagebox.showerror(title="Error!", message="Must select task to unmark as complete.")
 
 if __name__ == "__main__":
     task_gui = Task_GUI()
