@@ -2,9 +2,10 @@
 ## Features
 - Task creation, editing and deletion
 - File saving and retrieval system
-- Time setting for tasks
+- Due setting for tasks
 - Addition of notes to tasks
 - Addition of tags to tasks
+- Marking and un-marking of tasks as complete
 
 ## Installation & Setup
 1. Clone the repository:
@@ -29,7 +30,7 @@ Note: No external library installations required. Ensure you have Python 3.7+ in
    - Addition, deletion of tasks - DONE
    - Modification of tasks - DONE
    - Displaying of task information - DONE
-   - Mark tasks as complete and view completed tasks - IN PROGRESS
+   - Mark tasks as complete and view completed tasks - DONE
    - Reminders for due dates - IN PROGRESS
 
 ## License
