@@ -6,6 +6,7 @@
 - Addition of notes to tasks
 - Addition of tags to tasks
 - Marking and un-marking of tasks as complete
+- Search feature
 
 ## Installation & Setup
 1. Clone the repository:
