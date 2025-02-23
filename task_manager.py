@@ -159,22 +159,33 @@ class Task_Manager():
             self.save_tasks()
             return True
         return False
+    
+    def remove_complete_task(self, task_idx):
+        """Removes a task by index"""
+        if isinstance(task_idx, str):
+            try:
+                task_idx = int(task_idx)  
+            except ValueError:
+                return False  
+        if 0 <= task_idx < len(self.completed_task_list):
+            del self.completed_task_list[task_idx]
+            self.save_tasks()
+            return True
+        return False
 
-    def check_task_time(self):
-        """Checks amount of time left until task deadline"""
-        for task in self.task_list:
-            if task['time'] != "EMPTY":
-                deadline_timestamp = time.mktime(time.strptime(task['time'], "%H:%M %d %B %Y"))
-                time_left = deadline_timestamp - time.time()
-                
-                if time_left <= 0:
-                    print(f"\nWarning: task overdue! {task['task']} was due at {task['time']}")
-                elif time_left <= 3600:
-                    print(f"\nWarning: task due within an hour! {task['task']} is due at {task['time']}")
-                elif time_left <= 43200:
-                    print(f"\nWarning: task due within 12 hours! {task['task']} is due at {task['time']}")
-                elif time_left <= 86400:
-                    print(f"\nWarning: task due within a day! {task['task']} is due at {task['time']}")
+    def return_time_to_deadline(self, task_idx):
+        """Returns amount of time left until task deadline"""
+        task = self.task_list[task_idx]
+        if task['time'] != "EMPTY":
+            deadline_timestamp = time.mktime(time.strptime(task['time'], "%H:%M %d %B %Y"))
+            time_left = deadline_timestamp - time.time()
+            days = abs(time_left) // 86400
+            hours = (abs(time_left) % 86400) // 3600
+            minutes = (abs(time_left) % 3600) // 60
+            if time_left <= 0:
+                return f"Overdue {int(days)} days {int(hours)} hours {int(minutes)} minutes ago!"
+            else:
+                return f"Due in {int(days)} days {int(hours)} hours {int(minutes)} minutes"
 
     def save_tasks(self):
         with open("tasks.json", "w") as file:

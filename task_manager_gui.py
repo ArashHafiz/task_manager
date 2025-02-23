@@ -58,7 +58,7 @@ class Task_GUI():
         self.modify_task_button.pack(pady=2)
 
         # Delete task button
-        self.delete_task_button = tk.Button(self.button_frame, text="Delete Task", width=self.button_width, command=self.remove_task)
+        self.delete_task_button = tk.Button(self.button_frame, text="Delete Task", width=self.button_width, command=lambda: self.remove_task(complete=False))
         self.delete_task_button.pack(pady=2)
 
         # Mark as complete button
@@ -202,6 +202,10 @@ class Task_GUI():
         self.unmark_complete_button = tk.Button(self.completed_task_button_frame, text="Unmark Complete", width=self.button_width, command=self.unmark_as_complete)
         self.unmark_complete_button.pack(pady=2)
 
+        # Delete task button
+        self.delete_completed_task_button = tk.Button(self.completed_task_button_frame, text="Delete Task", width=self.button_width, command=lambda: self.remove_task(complete=True))
+        self.delete_completed_task_button.pack(pady=2)
+
         self.completed_task_window.columnconfigure(0, weight=1)
         self.completed_task_window.columnconfigure(1, weight=1)
         self.completed_task_window.columnconfigure(2, weight=1)
@@ -220,6 +224,7 @@ class Task_GUI():
             self.task_info_panel.insert(tk.END, f"Due: {task['time']}" if task['time'] != "EMPTY" else "Due: -")
             self.task_info_panel.insert(tk.END, f"Notes: {task['notes']}" if task['notes'] != "EMPTY" else "Notes: -")
             self.task_info_panel.insert(tk.END, f"Tag: {task['tag']}" if task['tag'] != "NO TAG" else "Tag: -")
+            self.task_info_panel.insert(tk.END, f"{self.task_manager.return_time_to_deadline(selected_task_idx)}" if self.task_manager.return_time_to_deadline(selected_task_idx) != None else "")
         else:
             self.task_info_panel.insert(tk.END, "Select a task to see details.")
 
@@ -266,20 +271,23 @@ class Task_GUI():
         self.has_added_task = True
         messagebox.showinfo(title="Task Added", message=f"'{new_task}' successfully added.")
     
-    def remove_task(self):
+    def remove_task(self, complete=False):
         """Deletes task"""
-        self.selected_task = self.task_listbox.curselection()
+        if not complete:
+            self.selected_task = self.task_listbox.curselection()
+        else:
+            self.selected_task = self.completed_listbox.curselection()
         if not self.selected_task:
             messagebox.showerror(title="Error!", message="Must select task to delete.")
             return
         self.selected_task_idx = self.selected_task[0]
-
-        self.remove_task_confirmation = messagebox.askquestion(title="Are you sure?" ,message=f"Are you sure you want to delete '{self.task_manager.task_list[self.selected_task_idx]['task']}'?")
+        task_name = self.task_manager.task_list[self.selected_task_idx]['task'] if not complete else self.task_manager.completed_task_list[self.selected_task_idx]['task']
+        self.remove_task_confirmation = messagebox.askquestion(title="Are you sure?" ,message=f"Are you sure you want to delete '{task_name}'?")
         if self.remove_task_confirmation == "no":
             return
 
-        self.task_manager.remove_task(self.selected_task_idx)
-        self.refresh_task_list()
+        self.task_manager.remove_task(self.selected_task_idx) if not complete else self.task_manager.remove_complete_task(self.selected_task_idx)
+        self.refresh_task_list() if not complete else self.refresh_completed_task_list()
         messagebox.showinfo(title="Task Deleted", message="Successfully deleted task.")
     
     def add_note(self, edit=False):
@@ -288,7 +296,7 @@ class Task_GUI():
             messagebox.showerror(title="Error!", message="No tasks to add note to.")
             return
 
-        if not self.has_added_task and edit == False:
+        if not self.has_added_task and not edit:
             messagebox.showerror(title="Error!", message="Must add task first before adding note.")
             return
         
