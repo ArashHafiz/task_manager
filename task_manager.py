@@ -101,7 +101,8 @@ class Task_Manager():
 
     def search_task(self, query):
         """Search for tasks based on a query"""
-        return [task['task'] for task in self.task_list if query.upper() in task["task"].upper()]
+        result = [task['task'] for task in self.task_list if query.upper() in task["task"].upper()]
+        return result if result else False
 
     def add_tag(self, task_idx, tag):
         """Adds a tag to a task"""

@@ -69,6 +69,10 @@ class Task_GUI():
         self.view_completed_tasks_button = tk.Button(self.button_frame, text="View Completed", width=self.button_width, command=self.open_completed_task_window)
         self.view_completed_tasks_button.pack(pady=2)
 
+        # Search for tasks button
+        self.search_task_button = tk.Button(self.button_frame, text="Search Task", width=self.button_width, command=self.open_search_task_window)
+        self.search_task_button.pack(pady=2)
+
         self.root.grid_columnconfigure(0, weight=2) # Listbox horizontal expansion
         self.root.grid_columnconfigure(1, weight=0) # Button frame horizontal expansion
         self.root.grid_rowconfigure(2, weight=1) # Bottom space vertical expansion
@@ -206,11 +210,32 @@ class Task_GUI():
         self.delete_completed_task_button = tk.Button(self.completed_task_button_frame, text="Delete Task", width=self.button_width, command=lambda: self.remove_task(complete=True))
         self.delete_completed_task_button.pack(pady=2)
 
+        # Configurations (for centre-alignment)
         self.completed_task_window.columnconfigure(0, weight=1)
         self.completed_task_window.columnconfigure(1, weight=1)
         self.completed_task_window.columnconfigure(2, weight=1)
 
         self.completed_task_window.grab_set()
+
+    def open_search_task_window(self):
+        """Opens search task window"""
+        # Initialize window
+        self.search_task_window = tk.Toplevel(self.root)
+        self.search_task_window.title("Search for Task")
+        self.search_task_window.geometry("500x200")
+        self.search_task_window.resizable(0, 0)
+
+        # Window labels
+        self.search_task_label = tk.Label(self.search_task_window, text="Search for Task", font=("Arial", 16))
+        self.search_task_label.grid(row=0, column=0, columnspan=3, padx=10, pady=5, sticky="n")
+
+        # Entry box
+        self.search_task_entry = tk.Entry(self.search_task_window, width=43, font=("Arial", 14))
+        self.search_task_entry.grid(row=1, column=0, columnspan=3, padx=10, pady=5, sticky="n")
+
+        # Search task button
+        self.search_task_button2 = tk.Button(self.search_task_window, text="Search Task", width=self.button_width, command=self.search_task)
+        self.search_task_button2.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky="n")
 
     def update_info_panel(self):
         """Updates information panel in root window"""
@@ -257,6 +282,20 @@ class Task_GUI():
         self.completed_listbox.delete(0, tk.END)
         for idx, task in enumerate(self.task_manager.completed_task_list):
             self.completed_listbox.insert(tk.END, f"{task['task']}")
+
+    def search_task(self):
+        """Searches for task"""
+        query = self.search_task_entry.get()
+        if not query:
+            messagebox.showerror(title="Error!", message="Must enter something for search query.")
+            return
+        if not self.task_manager.search_task(query):
+            messagebox.showinfo(title="Search Results", message="No results found.")
+            return
+        output_message = ""
+        for task in self.task_manager.search_task(query):
+            output_message+=f"\n{task}"
+        messagebox.showinfo(title="Search Results", message=f"Results found:\n{output_message}")
 
     def add_task(self):
         """Adds new task"""
