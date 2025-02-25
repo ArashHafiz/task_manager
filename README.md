@@ -16,7 +16,7 @@ cd task_manager
 ```
 2. Run the program:
 ```
-python task_manager.py
+python task_manager_gui.py
 ```
 Note: No external library installations required. Ensure you have Python 3.7+ installed.
 
