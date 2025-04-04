@@ -22,7 +22,9 @@ Note: No external library installations required. Ensure you have Python 3.7+ in
 
 ## Built With
 1. Python 3.11
-2. Time module
+2. ```tkinter``` library
+3. ```json``` library
+4. ```time``` module
 
 ## Current Schedule and Plans
 1. Add feature to allow storage of tasks even after program stops - DONE
