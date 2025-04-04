@@ -18,7 +18,7 @@ cd task_manager
 ```
 python task_manager_gui.py
 ```
-Note: No external library installations required. Ensure you have Python 3.7+ installed.
+Note: No external library installations required. Ensure you have Python 3.7+ installed. Program uses ```tkinter``` module which is included with most Python installations. If you encounter issues, ensure it is properly installed. For installation instructions, please refer to this: https://www.activestate.com/resources/quick-reads/how-to-install-tkinter-in-windows/
 
 ## Built With
 1. Python 3.11
