@@ -1,4 +1,4 @@
-# Task Manager (To-Do List) - WIP
+# Task Manager (To-Do List)
 ## Features
 - Task creation, editing and deletion
 - File saving and retrieval system
@@ -37,4 +37,4 @@ Note: No external library installations required. Ensure you have Python 3.7+ in
    - Reminders for due dates - IN PROGRESS
 
 ## License
-Software is open-source under the MIT license. Feel free to do as you please with it.
+Software is open-source under the MIT license.
