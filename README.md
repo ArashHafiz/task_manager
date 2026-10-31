@@ -37,4 +37,4 @@ Note: No external library installations required. Ensure you have Python 3.7+ in
    - Reminders for due dates - IN PROGRESS
 
 ## License
-Software is open-source under the MIT license.
+This project is licensed under the MIT License. See the LICENSE file for details.
